@@ -21,6 +21,9 @@ function SharedConfig(targetdb) {
     // initialise the nano connection
     this._db = nano(targetdb);
     
+    // initialise the feed
+    this._feed = null;
+    
     // read the environments from the db
     debug('requesting environments from config endpoint');
     this._db.list(function(err, info) {
@@ -61,7 +64,7 @@ SharedConfig.prototype.applyConfig = function(data) {
     
     // detect the changes between the existing config and the new config
     // and report the changes
-    xdiff.diff(this._data, newConfig).forEach(function(changeData) {
+    (xdiff.diff(this._data, newConfig) || []).forEach(function(changeData) {
         if (changeData[0] === 'set') {
             config.emit(changeData[1].slice(1).join('.') + '.change', changeData[2]);
         }
@@ -77,7 +80,7 @@ SharedConfig.prototype.applyConfig = function(data) {
 SharedConfig.prototype.use = function(environment, callback) {
     var config = this,
         db = this._db,
-        mergedConfig;
+        targetDocs = ['default', environment];
     
     // if we don't yet have environments defined, we aren't connected, so wait
     if (! this._environments) {
@@ -93,25 +96,79 @@ SharedConfig.prototype.use = function(environment, callback) {
     if (this._environments.indexOf(environment) < 0) {
         return callback(new Error('Unable to use the "' + environment + '" environment'));
     }
-
-    db.get('default', function(defaultErr, defaultConfig) {
-        db.get(environment, function(err, data) {
-            if (err) return callback(err);
-            
-            // update the target known environment
-            config._current = environment;
     
-            // merge the default and environment specific configuration    
-            mergedConfig = config.applyConfig(_.merge({}, defaultConfig, data));
-            
-            // apply the config and trigger the callback
-            callback(err, mergedConfig);
+    // if we have an exiting feed, then stop the feed and dereference
+    if (this._feed) {
+        this._feed.stop();
+        this._feed = null;
+    }
+    
+    this._loadEach(targetDocs, function(err, mergedConfig) {
+        if (err) return callback(err);
+        
+        // update the target known environment
+        config._current = environment;
+        
+        // apply the config
+        mergedConfig = config.applyConfig(mergedConfig);
+        
+        // initialise the follow feed
+        config._feed = db.follow({ since: 'now' });
+        config._feed.on('change', function(change) {
+            // if the change is related to the current environment or the default doc
+            // then apply the config change
+            if (targetDocs.indexOf(change.id) >= 0) {
+                config._loadEach(targetDocs, function(err, mergedConfig) {
+                    // console.log('merged config: ', mergedConfig);
+                    
+                    if (! err) {
+                        config.applyConfig(mergedConfig);
+                    }
+                });
+            }
         });
+        
+        // follow
+        config._feed.follow();
+        
+        // apply the config and trigger the callback
+        callback(err, mergedConfig);
     });
     
     return this;
 };
+
+/* "private" methods */
+
+SharedConfig.prototype._loadEach = function(targets, callback, baseConfig) {
+    var config = this,
+        nextTarget;
+        
+    // ensure targets is a copy
+    targets = [].concat(targets);
     
+    // get the next target
+    nextTarget = targets.shift();
+    
+    // ensure we have a config
+    baseConfig = baseConfig || {};
+    
+    // if we don't have a nextTarget, fire the callback
+    if (! nextTarget) return callback(null, baseConfig);
+
+    // get the data for the next config
+    this._db.get(nextTarget, function(err, data) {
+        // if we loaded, successfully, merge the config
+        if (! err) {
+            // console.log(config, data);
+            baseConfig = _.merge(baseConfig, data);
+        }
+        
+        // recurse and load the next target
+        config._loadEach(targets, callback, baseConfig);
+    });
+}
+
 module.exports = function(targetdb) {
     return new SharedConfig(targetdb);
 };

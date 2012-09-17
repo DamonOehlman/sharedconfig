@@ -17,6 +17,10 @@ describe('simple read tests', function() {
         assert(config._environments.length > 0);
     });
     
+    it('can create a new config, and not wait for a connect event to continue', function() {
+        config = sharedconfig('http://sidelab.iriscouch.com/sharedconfig');
+    });
+    
     it('can retrieve the full prod config', function(done) {
         config.use('prod', function(err, data) {
             assert.ifError(err);
@@ -79,5 +83,5 @@ describe('simple read tests', function() {
         });
         
         config.use('prod');
-    })
+    });
 });

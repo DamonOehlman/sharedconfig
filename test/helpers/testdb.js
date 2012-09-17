@@ -2,9 +2,12 @@ var debug = require('debug')('sharedconfig-tests'),
     nano = require('nano'),
     db = nano('http://sidelab.iriscouch.com/sharedconfig'),
     async = require('async'),
+    xdiff = require('xdiff'),
+    _ = require('lodash'),
     docTemplates = {
         default: {
             a: 1,
+            b: 3,
             
             redis: {
                 host: 'localhost',
@@ -52,7 +55,6 @@ function prime(name) {
     
 // patch in a prepare method
 db.prepare = function(callback) {
-    /*
     async.parallel([
         prime('default'),
         prime('dev'),
@@ -60,9 +62,27 @@ db.prepare = function(callback) {
         prime('stg'),
         prime('prod')
     ], callback);
-    */
+};
+
+db.update = function(environment, data, callback) {
+    var changes;
     
-    callback();
+    db.get(environment, function(err, body) {
+        var diffable;
+        
+        if (err) return callback(err);
+        
+        // get the diffable body
+        diffable = _.filter(body, function(value, key) {
+            return key[0] !== '_';
+        });
+        
+        // get the diff between the two and apply the patch
+        changes = xdiff.diff(diffable, data);
+        
+        // apply the changes and update the document
+        db.insert(xdiff.patch(body, changes), callback);
+    });
 };
     
 module.exports = db;
