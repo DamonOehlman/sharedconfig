@@ -7,7 +7,7 @@ describe('follow changes tests', function() {
     before(testdb.prepare);
 
     it('should be able to connect to the config endpoint', function() {
-        config = sharedconfig('http://sidelab.iriscouch.com/sharedconfig');
+        config = sharedconfig('http://damonoehlman.iriscouch.com/sharedconfig-test');
     });
     
     it('should be able to use the development environment', function(done) {

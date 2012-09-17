@@ -7,7 +7,7 @@ describe('simple read tests', function() {
     before(testdb.prepare);
     
     it('should be able to connect to the config endpoint', function(done) {
-        config = sharedconfig('http://sidelab.iriscouch.com/sharedconfig').on('connect', done);
+        config = sharedconfig('http://damonoehlman.iriscouch.com/sharedconfig-test').on('connect', done);
         
         // ensure that the config is defined
         assert(config);
@@ -18,7 +18,7 @@ describe('simple read tests', function() {
     });
     
     it('can create a new config, and not wait for a connect event to continue', function() {
-        config = sharedconfig('http://sidelab.iriscouch.com/sharedconfig');
+        config = sharedconfig('http://damonoehlman.iriscouch.com/sharedconfig-test');
     });
     
     it('can retrieve the full prod config', function(done) {
@@ -83,5 +83,10 @@ describe('simple read tests', function() {
         });
         
         config.use('prod');
+    });
+    
+    it('should be able to release a config', function() {
+        config.release();
+        assert(! config._feed);
     });
 });

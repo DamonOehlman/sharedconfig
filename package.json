@@ -9,7 +9,7 @@
   ],
   "version": "0.1.0",
   "engines": {
-    "node": ">= 0.4.x < 0.9.0"
+    "node": ">= 0.6.x < 0.9.0"
   },
   "dependencies": {
     "debug": "*",
@@ -29,7 +29,7 @@
     "url": "http://github.com/DamonOehlman/sharedconfig/issues"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec --timeout 10000"
+    "test": "./node_modules/.bin/mocha --reporter spec --timeout 20000"
   },
   "contributors": [],
   "optionalDependencies": {}

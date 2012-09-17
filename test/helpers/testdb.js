@@ -1,6 +1,6 @@
 var debug = require('debug')('sharedconfig-tests'),
     nano = require('nano'),
-    db = nano('http://sidelab.iriscouch.com/sharedconfig'),
+    db = nano('http://damonoehlman.iriscouch.com/sharedconfig-test'),
     async = require('async'),
     xdiff = require('xdiff'),
     _ = require('lodash'),

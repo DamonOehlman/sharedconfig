@@ -28,6 +28,7 @@ function SharedConfig(targetdb) {
     debug('requesting environments from config endpoint');
     this._db.list(function(err, info) {
         if (! err) {
+            debug('retrieve list of config docs from db: ', info.rows);
             config._environments = info.rows.map(function(doc) {
                 return doc.id;
             });
@@ -96,12 +97,9 @@ SharedConfig.prototype.use = function(environment, callback) {
     if (this._environments.indexOf(environment) < 0) {
         return callback(new Error('Unable to use the "' + environment + '" environment'));
     }
-    
-    // if we have an exiting feed, then stop the feed and dereference
-    if (this._feed) {
-        this._feed.stop();
-        this._feed = null;
-    }
+
+    // release the existing configuration
+    this.release();
     
     this._loadEach(targetDocs, function(err, mergedConfig) {
         if (err) return callback(err);
@@ -136,6 +134,14 @@ SharedConfig.prototype.use = function(environment, callback) {
     });
     
     return this;
+};
+
+SharedConfig.prototype.release = function() {
+    // if we have an exiting feed, then stop the feed and dereference
+    if (this._feed) {
+        this._feed.stop();
+        this._feed = null;
+    }
 };
 
 /* "private" methods */
