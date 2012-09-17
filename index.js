@@ -16,7 +16,7 @@ function SharedConfig(targetdb) {
     this._current = null;
     
     // initialise the environments array to empty
-    this._environments = [];
+    this._environments = null;
     
     // initialise the nano connection
     this._db = nano(targetdb);
@@ -66,6 +66,9 @@ SharedConfig.prototype.applyConfig = function(data) {
             config.emit(changeData[1].slice(1).join('.') + '.change', changeData[2]);
         }
     });
+    
+    // trigger a global change event
+    config.emit('change', newConfig, config._current);
 
     // return the new config
     return this._data = newConfig;
@@ -75,6 +78,11 @@ SharedConfig.prototype.use = function(environment, callback) {
     var config = this,
         db = this._db,
         mergedConfig;
+    
+    // if we don't yet have environments defined, we aren't connected, so wait
+    if (! this._environments) {
+        return this.once('connect', this.use.bind(this, environment, callback));
+    }
         
     // ensure we have an error handling callback
     callback = callback || function(err) {
@@ -95,9 +103,6 @@ SharedConfig.prototype.use = function(environment, callback) {
     
             // merge the default and environment specific configuration    
             mergedConfig = config.applyConfig(_.merge({}, defaultConfig, data));
-            
-            // emit the loaded event
-            config.emit('loaded', environment, mergedConfig);
             
             // apply the config and trigger the callback
             callback(err, mergedConfig);
