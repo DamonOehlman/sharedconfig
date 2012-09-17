@@ -2,11 +2,15 @@ var debug = require('debug')('sharedconfig'),
     nano = require('nano'),
     events = require('events'),
     util = require('util'),
+    xdiff = require('xdiff'),
     _ = require('lodash'),
     rePrivate = /^_/;
     
 function SharedConfig(targetdb) {
     var config = this;
+    
+    // initialise the data
+    this._data = {};
     
     // initialise the current environment to null
     this._current = null;
@@ -55,7 +59,16 @@ SharedConfig.prototype.applyConfig = function(data) {
         }
     });
     
-    return newConfig;
+    // detect the changes between the existing config and the new config
+    // and report the changes
+    xdiff.diff(this._data, newConfig).forEach(function(changeData) {
+        if (changeData[0] === 'set') {
+            config.emit(changeData[1].slice(1).join('.') + '.change', changeData[2]);
+        }
+    });
+
+    // return the new config
+    return this._data = newConfig;
 };
 
 SharedConfig.prototype.use = function(environment, callback) {

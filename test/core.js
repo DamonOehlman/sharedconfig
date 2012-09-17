@@ -47,7 +47,7 @@ describe('simple read tests', function() {
     
     it('can use events to wait for config load', function(done) {
         config.use('test')
-            .on('loaded', function(environment, data) {
+            .once('loaded', function(environment, data) {
                 assert.equal(environment, 'test');
                 assert.equal(data.a, 3);
                 done();
@@ -57,5 +57,18 @@ describe('simple read tests', function() {
     
     it('has mapped the test data to the config object', function() {
         assert.equal(config.a, 3);
+    });
+    
+    it('can repond to changes on a targeted property', function(done) {
+        config.once('a.change', function(newValue) {
+            assert.equal(newValue, 5);
+            done();
+        });
+        
+        config.use('dev');
+    });
+    
+    it('has mapped the test data to the config obejct correctly', function() {
+        assert.equal(config.a, 5);
     });
 });
