@@ -7,11 +7,10 @@
     "couchdb",
     "sync"
   ],
-  "version": "0.0.0",
+  "version": "0.0.1",
   "engines": {
     "node": ">= 0.4.x < 0.9.0"
   },
-  
   "dependencies": {
     "debug": "*",
     "nano": "3.3.x",
