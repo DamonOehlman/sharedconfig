@@ -44,4 +44,18 @@ describe('simple read tests', function() {
     it('has mapped the dev config data to the config object', function() {
         assert.equal(config.a, 5);
     });
+    
+    it('can use events to wait for config load', function(done) {
+        config.use('test')
+            .on('loaded', function(environment, data) {
+                assert.equal(environment, 'test');
+                assert.equal(data.a, 3);
+                done();
+            })
+            .on('error', done);
+    });
+    
+    it('has mapped the test data to the config object', function() {
+        assert.equal(config.a, 3);
+    });
 });

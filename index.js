@@ -62,7 +62,12 @@ SharedConfig.prototype.use = function(environment, callback) {
     var config = this,
         db = this._db,
         mergedConfig;
-    
+        
+    // ensure we have an error handling callback
+    callback = callback || function(err) {
+        if (err) config.emit('error', err);
+    };
+        
     // if we are not currently aware of the environment return an error via the callback
     if (this._environments.indexOf(environment) < 0) {
         return callback(new Error('Unable to use the "' + environment + '" environment'));
@@ -76,12 +81,17 @@ SharedConfig.prototype.use = function(environment, callback) {
             config._current = environment;
     
             // merge the default and environment specific configuration    
-            mergedConfig = _.merge({}, defaultConfig, data);
+            mergedConfig = config.applyConfig(_.merge({}, defaultConfig, data));
+            
+            // emit the loaded event
+            config.emit('loaded', environment, mergedConfig);
             
             // apply the config and trigger the callback
-            callback(err, config.applyConfig(mergedConfig));
+            callback(err, mergedConfig);
         });
     });
+    
+    return this;
 };
     
 module.exports = function(targetdb) {

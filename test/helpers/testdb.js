@@ -12,7 +12,7 @@ var debug = require('debug')('sharedconfig-tests'),
         },
         
         test: {
-            
+            a: 3
         },
         
         stg: {
