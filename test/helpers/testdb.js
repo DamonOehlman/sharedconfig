@@ -4,7 +4,12 @@ var debug = require('debug')('sharedconfig-tests'),
     async = require('async'),
     docTemplates = {
         default: {
-            a: 1
+            a: 1,
+            
+            redis: {
+                host: 'localhost',
+                port: 6379
+            }
         },
         
         dev: {
@@ -20,7 +25,9 @@ var debug = require('debug')('sharedconfig-tests'),
         },
         
         prod: {
-            
+            redis: {
+                host: 'redis.mysuperdomain.com'
+            }
         }
     };
     
@@ -45,7 +52,6 @@ function prime(name) {
     
 // patch in a prepare method
 db.prepare = function(callback) {
-    /*
     async.parallel([
         prime('default'),
         prime('dev'),
@@ -53,9 +59,6 @@ db.prepare = function(callback) {
         prime('stg'),
         prime('prod')
     ], callback);
-    */
-    
-    callback();
 };
     
 module.exports = db;
