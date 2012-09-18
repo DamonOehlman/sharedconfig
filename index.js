@@ -42,7 +42,7 @@ function SharedConfig(targetdb) {
         }
         
         debug('finished querying db, triggering appropriate event');
-        config.emit(err ? 'error' : 'connect');
+        config.emit(err ? 'error' : 'connect', err);
     });
 }
 
