@@ -85,6 +85,22 @@ describe('simple read tests', function() {
         config.use('prod');
     });
     
+    it('can respond to wildcard updates', function(done) {
+        config.once('update.*', function() {
+            done();
+        });
+
+        config.use('dev');
+    });
+    
+    it('can respond to wildcard updates on subproperties', function(done) {
+        config.once('update.redis.*', function() {
+            done();
+        });
+    
+        config.use('prod');
+    });
+
     it('should be able to release a config', function() {
         config.release();
         assert(! config._feed);

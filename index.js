@@ -9,6 +9,9 @@ var debug = require('debug')('sharedconfig'),
 function SharedConfig(targetdb) {
     var config = this;
     
+    // call the eventemitter2 constructor
+    EventEmitter2.call(this, { wildcard: true });
+    
     // initialise the data
     this._data = {};
     
@@ -29,16 +32,21 @@ function SharedConfig(targetdb) {
     this._db.list(function(err, info) {
         if (! err) {
             debug('retrieve list of config docs from db: ', info.rows);
+            if (info.rows.length === 0) {
+                console.log(err, info);
+            }
+            
             config._environments = info.rows.map(function(doc) {
                 return doc.id;
             });
         }
         
+        debug('finished querying db, triggering appropriate event');
         config.emit(err ? 'error' : 'connect');
     });
 }
 
-util.inherits(SharedConfig, EventEmitter2);
+SharedConfig.prototype = new EventEmitter2({ wildcard: true });
 
 SharedConfig.prototype.applyConfig = function(data) {
     var config = this,
