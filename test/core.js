@@ -22,8 +22,15 @@ describe('simple read tests', function() {
     });
     
     it('can retrieve the full prod config', function(done) {
+        var bUpdated = false;
+        
+        config.once('update.b', function() {
+            bUpdated = true;
+        });
+        
         config.use('prod', function(err, data) {
             assert.ifError(err);
+            assert(bUpdated, 'Invidividual update events were not fired on initial configutation load');
             assert.equal(config._current, 'prod');
             assert.equal(data.a, 1);
             

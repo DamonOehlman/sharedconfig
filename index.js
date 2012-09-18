@@ -12,6 +12,10 @@ function SharedConfig(targetdb) {
     // call the eventemitter2 constructor
     EventEmitter2.call(this, { wildcard: true });
     
+    // initialise the rePrivate regex based on the contents of the 
+    // eventemitter members
+    rePrivate = new RegExp('^(' + ['_'].concat(Object.keys(this)).join('|') + ')');
+    
     // initialise the data
     this._data = {};
     
@@ -141,7 +145,7 @@ SharedConfig.prototype.use = function(environment, callback) {
         // follow
         config._feed.follow();
         
-        // apply the config and trigger the callback
+        // trigger the callback
         callback(err, mergedConfig);
     });
     
