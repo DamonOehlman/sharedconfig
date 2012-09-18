@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "debug": "*",
+    "eventemitter2": "0.4.x",
     "nano": "3.3.x",
     "xdiff": "0.2.x",
     "lodash": "0.7.x"

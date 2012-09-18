@@ -51,7 +51,7 @@ describe('simple read tests', function() {
     
     it('can use events to wait for config load', function(done) {
         config.use('test')
-            .once('change', function(data, environment) {
+            .once('changed', function(data, environment) {
                 assert.equal(environment, 'test');
                 assert.equal(data.a, 3);
                 done();
@@ -64,7 +64,7 @@ describe('simple read tests', function() {
     });
     
     it('can respond to changes on a targeted property', function(done) {
-        config.once('a.change', function(newValue) {
+        config.once('update.a', function(newValue) {
             assert.equal(newValue, 5);
             done();
         });
@@ -77,7 +77,7 @@ describe('simple read tests', function() {
     });
     
     it('can respond to changes on a targeted, nested properties', function(done) {
-        config.once('redis.host.change', function(newValue) {
+        config.once('update.redis.host', function(newValue) {
             assert.equal(newValue, 'redis.mysuperdomain.com');
             done();
         });

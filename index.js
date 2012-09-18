@@ -1,6 +1,6 @@
 var debug = require('debug')('sharedconfig'),
     nano = require('nano'),
-    events = require('events'),
+    EventEmitter2 = require('eventemitter2').EventEmitter2,
     util = require('util'),
     xdiff = require('xdiff'),
     _ = require('lodash'),
@@ -38,14 +38,15 @@ function SharedConfig(targetdb) {
     });
 }
 
-util.inherits(SharedConfig, events.EventEmitter);
+util.inherits(SharedConfig, EventEmitter2);
 
 SharedConfig.prototype.applyConfig = function(data) {
     var config = this,
         newKeys = Object.keys(data).filter(function(key) {
             return ! rePrivate.test(key);
         }),
-        newConfig = {};
+        newConfig = {},
+        changes;
     
     // delete any keys from this object that are owned by the object
     // and don't start with an underscore
@@ -63,16 +64,19 @@ SharedConfig.prototype.applyConfig = function(data) {
         }
     });
     
+    // get the change delta
+    changes = xdiff.diff(this._data, newConfig) || [];
+    
     // detect the changes between the existing config and the new config
     // and report the changes
-    (xdiff.diff(this._data, newConfig) || []).forEach(function(changeData) {
+    changes.forEach(function(changeData) {
         if (changeData[0] === 'set') {
-            config.emit(changeData[1].slice(1).join('.') + '.change', changeData[2]);
+            config.emit('update.' + changeData[1].slice(1).join('.'), changeData[2]);
         }
     });
     
     // trigger a global change event
-    config.emit('change', newConfig, config._current);
+    config.emit('changed', newConfig, config._current, changes);
 
     // return the new config
     return this._data = newConfig;

@@ -15,7 +15,7 @@ describe('follow changes tests', function() {
     });
 
     it('should be able to detect a change in the dev config', function(done) {
-        config.once('a.change', function(newValue) {
+        config.once('update.a', function(newValue) {
             assert.equal(newValue, 10);
             done();
         });
@@ -24,7 +24,7 @@ describe('follow changes tests', function() {
     });
     
     it('should be able to detect a change in the default config', function(done) {
-        config.once('b.change', function(newValue) {
+        config.once('update.b', function(newValue) {
             assert.equal(newValue, 5);
             done();
         });
@@ -35,7 +35,7 @@ describe('follow changes tests', function() {
     it('should ignore changes to the default config when overriden by the environment specified config', function(done) {
         var changed = false;
         
-        config.once('a.change', function(newValue) {
+        config.once('update.a', function(newValue) {
             changed = true;
         });
         
