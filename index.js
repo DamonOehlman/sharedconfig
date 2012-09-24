@@ -4,7 +4,7 @@ var debug = require('debug')('sharedconfig'),
     util = require('util'),
     xdiff = require('xdiff'),
     _ = require('lodash'),
-    rePrivate;
+    privateMembers = ['_', 'filter'];
     
 function SharedConfig(targetdb) {
     var config = this;
@@ -12,12 +12,9 @@ function SharedConfig(targetdb) {
     // call the eventemitter2 constructor
     EventEmitter2.call(this, { wildcard: true });
     
-    // initialise the filter to null so it resolves to the prototype method
-    this.filter = null;
-    
     // initialise the rePrivate regex based on the contents of the 
     // eventemitter members
-    rePrivate = new RegExp('^(' + ['_'].concat(Object.keys(this)).join('|') + ')');
+    this._privateRegex = new RegExp('^(' + privateMembers.concat(Object.keys(this)).join('|') + ')');
     
     // initialise the data
     this._data = {};
@@ -59,7 +56,7 @@ SharedConfig.prototype = new EventEmitter2({ wildcard: true });
 SharedConfig.prototype.applyConfig = function(data) {
     var config = this,
         newKeys = Object.keys(data).filter(function(key) {
-            return ! rePrivate.test(key);
+            return ! config._privateRegex.test(key);
         }),
         newConfig = {},
         changes;
@@ -67,7 +64,7 @@ SharedConfig.prototype.applyConfig = function(data) {
     // delete any keys from this object that are owned by the object
     // and don't start with an underscore
     Object.keys(config).forEach(function(key) {
-        if (config.hasOwnProperty(key) && (! rePrivate.test(key))) {
+        if (config.hasOwnProperty(key) && (! config._privateRegex.test(key))) {
             delete config[key];
         }
     });
