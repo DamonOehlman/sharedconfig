@@ -4,13 +4,16 @@ var debug = require('debug')('sharedconfig'),
     util = require('util'),
     xdiff = require('xdiff'),
     _ = require('lodash'),
-    rePrivate = /^_/;
+    rePrivate;
     
 function SharedConfig(targetdb) {
     var config = this;
     
     // call the eventemitter2 constructor
     EventEmitter2.call(this, { wildcard: true });
+    
+    // initialise the filter to null so it resolves to the prototype method
+    this.filter = null;
     
     // initialise the rePrivate regex based on the contents of the 
     // eventemitter members
@@ -37,6 +40,7 @@ function SharedConfig(targetdb) {
         if (! err) {
             debug('retrieve list of config docs from db: ', info.rows);
             if (info.rows.length === 0) {
+                console.log('error connecting to the db');
                 console.log(err, info);
             }
             
@@ -72,7 +76,7 @@ SharedConfig.prototype.applyConfig = function(data) {
     newKeys.forEach(function(key) {
         // add the key to the item if it isn't an owned item already
         if (! config.hasOwnProperty(key)) {
-            config[key] = newConfig[key] = _.clone(data[key]);
+            config[key] = newConfig[key] = config._clone(data[key]);
         }
     });
     
@@ -93,6 +97,29 @@ SharedConfig.prototype.applyConfig = function(data) {
     // return the new config
     return this._data = newConfig;
 };
+
+/**
+## filter
+
+The filter function is used to apply changes to the configuration values
+as they are passed from shared config to the functions that make use of the data.  By
+default the filter does nothing, but a filter function can be allocated simply:
+
+    var config = sharedconfig('url');
+    
+    // set the filter to uppercase all values
+    config.filter = function(input) {
+        return input.toUpperCase();
+    };
+
+To unset the filter simply delete the reference on the base object:
+
+    delete config.filter;
+    
+*/
+SharedConfig.prototype.filter = function(input) {
+    return input;
+}
 
 SharedConfig.prototype.use = function(environment, callback) {
     var config = this,
@@ -161,6 +188,27 @@ SharedConfig.prototype.release = function() {
 };
 
 /* "private" methods */
+
+SharedConfig.prototype._clone = function(input) {
+    var config = this,
+        clone = {};
+    
+    // if we have an object and not a String instance, then clone
+    if (typeof input == 'object' && (! (input instanceof String))) {
+        Object.keys(input).forEach(function(key) {
+            if (input.hasOwnProperty(key)) {
+                clone[key] = config._clone(input[key]);
+            }
+        });
+    }
+    // otherwise run the simple input value through the filter
+    else {
+        // opth
+        clone = this.filter(input);
+    }
+    
+    return clone;
+};
 
 SharedConfig.prototype._loadEach = function(targets, callback, baseConfig) {
     var config = this,
