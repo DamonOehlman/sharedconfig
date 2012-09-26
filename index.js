@@ -6,6 +6,26 @@ var debug = require('debug')('sharedconfig'),
     _ = require('lodash'),
     privateMembers = ['_', 'filter'];
     
+/**
+## triggerUpdates
+This is a helper function that will trigger updates for each of the leaf nodes within value.  If value is
+already a leaf node, then the update event will be triggered, otherwise the child elements of value
+will be traversed and updates triggered appropriately.
+*/
+function triggerUpdates(config, ns, value) {
+    // if the value is an object ({}) then traverse down through children
+    if (typeof value == 'object' && (! Array.isArray(value)) && (! (value instanceof String))) {
+        _.each(value, function(child, key) {
+            triggerUpdates(config, ns + '.' + key, child);
+        });
+    }
+    // otherwise, emit the update
+    else {
+        debug('update.' + ns, value);
+        config.emit('update.' + ns, value);
+    }
+}
+    
 function SharedConfig(targetdb) {
     var config = this;
     
@@ -84,7 +104,7 @@ SharedConfig.prototype.applyConfig = function(data) {
     // and report the changes
     changes.forEach(function(changeData) {
         if (changeData[0] === 'set') {
-            config.emit('update.' + changeData[1].slice(1).join('.'), changeData[2]);
+            triggerUpdates(config, changeData[1].slice(1).join('.'), changeData[2]);
         }
     });
     

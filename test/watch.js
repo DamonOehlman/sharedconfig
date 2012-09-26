@@ -10,10 +10,14 @@ describe('follow changes tests', function() {
         config = sharedconfig('http://damonoehlman.iriscouch.com/sharedconfig-test');
     });
     
-    it('should be able to use the development environment', function(done) {
-        config.use('dev', done);
+    it('should receive initial notifications for data updates', function(done) {
+        config.once('update.redis.host', function(newValue) {
+            done();
+        });
+        
+        config.use('dev');
     });
-
+    
     it('should be able to detect a change in the dev config', function(done) {
         config.once('update.a', function(newValue) {
             assert.equal(newValue, 10);
