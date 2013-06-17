@@ -7,7 +7,7 @@ describe('filter tests', function() {
     before(testdb.prepare);
 
     it('should be able to connect to the config endpoint', function(done) {
-        config = sharedconfig('http://damonoehlman.iriscouch.com/sharedconfig-test').on('connect', done);
+        config = sharedconfig(testdb.host+'/sharedconfig-test').on('connect', done);
 
         // ensure that the config is defined
         assert(config);

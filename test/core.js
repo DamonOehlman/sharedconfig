@@ -7,18 +7,18 @@ describe('simple read tests', function() {
     before(testdb.prepare);
     
     it('should be able to connect to the config endpoint', function(done) {
-        config = sharedconfig('http://damonoehlman.iriscouch.com/sharedconfig-test').on('connect', done);
+        config = sharedconfig(testdb.host+'/sharedconfig-test').on('connect', done);
         
         // ensure that the config is defined
         assert(config);
     });
-    
+
     it('should be have initialized the environments array', function() {
         assert(config._environments.length > 0);
     });
     
     it('can create a new config, and not wait for a connect event to continue', function() {
-        config = sharedconfig('http://damonoehlman.iriscouch.com/sharedconfig-test');
+        config = sharedconfig(testdb.host+'/sharedconfig-test');
     });
     
     it('can retrieve the full prod config', function(done) {

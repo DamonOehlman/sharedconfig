@@ -7,7 +7,7 @@ describe('follow changes tests', function() {
     before(testdb.prepare);
 
     it('should be able to connect to the config endpoint', function() {
-        config = sharedconfig('http://damonoehlman.iriscouch.com/sharedconfig-test');
+        config = sharedconfig(testdb.host+'/sharedconfig-test');
     });
     
     it('should receive initial notifications for data updates', function(done) {

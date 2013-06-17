@@ -1,5 +1,8 @@
+// Select iris couch as the couch test server if this test is running on travis
+var couchHost = (process.env.NODE_ENV === 'travis')? 'http://damonoehlman.iriscouch.com' : 'http://127.0.0.1:5984';
+
 var debug = require('debug')('sharedconfig-tests'),
-    nano = require('nano')('http://127.0.0.1:5984'),
+    nano = require('nano')(couchHost),
     db = nano.use('sharedconfig-test'),
     async = require('async'),
     xdiff = require('xdiff'),
@@ -33,7 +36,7 @@ var debug = require('debug')('sharedconfig-tests'),
             }
         }
     };
-    
+
 function prime(name) {
     var tasks = [db.insert.bind(db, docTemplates[name], name)];
     
@@ -57,7 +60,9 @@ function prime(name) {
         });
     };
 }
-    
+
+db.host = couchHost;
+
 // patch in a prepare method
 db.prepare = function(callback) {
     async.parallel([
