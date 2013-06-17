@@ -1,6 +1,9 @@
+// Select iris couch as the couch test server if this test is running on travis
+var couchHost = (process.env.NODE_ENV === 'travis')? 'http://damonoehlman.iriscouch.com' : 'http://127.0.0.1:5984';
+
 var debug = require('debug')('sharedconfig-tests'),
-    nano = require('nano'),
-    db = nano('http://damonoehlman.iriscouch.com/sharedconfig-test'),
+    nano = require('nano')(couchHost),
+    db = nano.use('sharedconfig-test'),
     async = require('async'),
     xdiff = require('xdiff'),
     _ = require('lodash'),
@@ -33,7 +36,7 @@ var debug = require('debug')('sharedconfig-tests'),
             }
         }
     };
-    
+
 function prime(name) {
     var tasks = [db.insert.bind(db, docTemplates[name], name)];
     
@@ -42,6 +45,11 @@ function prime(name) {
         
         // initialise the default settings
         db.get(name, function(err, body) {
+            if(err && err.message === 'no_db_file') {
+                // Create db then try to prime the document again
+                return nano.db.create(db.config.db, prime.call(prime, name)(done));
+            }
+
             // if the document exists, then remove it
             if (! err) {
                 tasks.unshift(db.destroy.bind(db, name, body._rev));
@@ -49,10 +57,12 @@ function prime(name) {
             
             debug('deleting and inserting "' + name + '" document as required.');
             async.series(tasks, done);
-        });    
+        });
     };
 }
-    
+
+db.host = couchHost;
+
 // patch in a prepare method
 db.prepare = function(callback) {
     async.parallel([
