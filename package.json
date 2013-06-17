@@ -19,8 +19,8 @@
     "lodash": "0.7.x"
   },
   "devDependencies": {
-    "async": "0.1.x",
-    "mocha": "1.4.x"
+    "async": "0.2.x",
+    "mocha": "1.9.x"
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec",
-    "travis": "NODE_ENV=travis ./node_modules/.bin/mocha --reporter spec --timeout 20000"
+    "travis": "NODE_ENV=travis ./node_modules/.bin/mocha --reporter spec --timeout 30s"
   },
   "contributors": [],
   "optionalDependencies": {}
