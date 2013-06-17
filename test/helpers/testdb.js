@@ -1,6 +1,6 @@
 var debug = require('debug')('sharedconfig-tests'),
-    nano = require('nano'),
-    db = nano('http://damonoehlman.iriscouch.com/sharedconfig-test'),
+    nano = require('nano')('http://127.0.0.1:5984'),
+    db = nano.use('sharedconfig-test'),
     async = require('async'),
     xdiff = require('xdiff'),
     _ = require('lodash'),
@@ -42,6 +42,11 @@ function prime(name) {
         
         // initialise the default settings
         db.get(name, function(err, body) {
+            if(err && err.message === 'no_db_file') {
+                // Create db then try to prime the document again
+                return nano.db.create(db.config.db, prime.call(prime, name)(done));
+            }
+
             // if the document exists, then remove it
             if (! err) {
                 tasks.unshift(db.destroy.bind(db, name, body._rev));
@@ -49,7 +54,7 @@ function prime(name) {
             
             debug('deleting and inserting "' + name + '" document as required.');
             async.series(tasks, done);
-        });    
+        });
     };
 }
     
