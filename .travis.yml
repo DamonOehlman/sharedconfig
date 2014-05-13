@@ -1,11 +1,8 @@
 language: node_js
 script: "npm run-script travis"
 node_js:
-  - 0.6
-  - 0.8
   - 0.10
 
 notifications:
   email:
     - damon.oehlman@gmail.com
-  irc: "irc.freenode.org#sidelab"
