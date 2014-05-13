@@ -6,3 +6,6 @@ node_js:
 notifications:
   email:
     - damon.oehlman@gmail.com
+
+services:
+  - couchdb
