@@ -11,9 +11,9 @@
   "dependencies": {
     "debug": "*",
     "eventemitter2": "0.4.x",
+    "lodash": "^2",
     "nano": "^5",
-    "xdiff": "0.2.x",
-    "underscore": "^1"
+    "xdiff": "0.2.x"
   },
   "devDependencies": {
     "async": "~0.8",

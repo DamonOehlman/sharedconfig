@@ -3,7 +3,7 @@ var debug = require('debug')('sharedconfig'),
     EventEmitter2 = require('eventemitter2').EventEmitter2,
     util = require('util'),
     xdiff = require('xdiff'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     privateMembers = ['_', 'filter'];
 
 /**

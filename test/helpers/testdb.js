@@ -11,25 +11,25 @@ var debug = require('debug')('sharedconfig-tests'),
         default: {
             a: 1,
             b: 3,
-            
+
             redis: {
                 host: 'localhost',
                 port: 6379
             }
         },
-        
+
         dev: {
             a: 5
         },
-        
+
         test: {
             a: 3
         },
-        
+
         stg: {
-            
+
         },
-        
+
         prod: {
             redis: {
                 host: 'redis.mysuperdomain.com'
@@ -39,10 +39,10 @@ var debug = require('debug')('sharedconfig-tests'),
 
 function prime(name) {
     var tasks = [db.insert.bind(db, docTemplates[name], name)];
-    
+
     return function(done) {
         debug('attempting to get "' + name + '" doc');
-        
+
         // initialise the default settings
         db.get(name, function(err, body) {
             if(err && err.message === 'no_db_file') {
@@ -54,13 +54,14 @@ function prime(name) {
             if (! err) {
                 tasks.unshift(db.destroy.bind(db, name, body._rev));
             }
-            
+
             debug('deleting and inserting "' + name + '" document as required.');
             async.series(tasks, done);
         });
     };
 }
 
+debug('using db host: ' + couchHost);
 db.host = couchHost;
 
 // patch in a prepare method
@@ -76,23 +77,23 @@ db.prepare = function(callback) {
 
 db.update = function(environment, data, callback) {
     var changes;
-    
+
     db.get(environment, function(err, body) {
         var diffable;
-        
+
         if (err) return callback(err);
-        
+
         // get the diffable body
         diffable = _.filter(body, function(value, key) {
             return key[0] !== '_';
         });
-        
+
         // get the diff between the two and apply the patch
         changes = xdiff.diff(diffable, data);
-        
+
         // apply the changes and update the document
         db.insert(xdiff.patch(body, changes), callback);
     });
 };
-    
+
 module.exports = db;
