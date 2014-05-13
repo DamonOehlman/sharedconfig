@@ -1,16 +1,13 @@
 {
   "name": "sharedconfig",
   "description": "Shared Configuration Interface using CouchDB as a backend",
-  "author": "Damon Oehlman <damon.oehlman@sidelab.com>",
-  "tags": [
+  "author": "Damon Oehlman <damon.oehlman@gmail.com>",
+  "keywords": [
     "config",
     "couchdb",
     "sync"
   ],
   "version": "0.1.6",
-  "engines": {
-    "node": ">= 0.6.x < 0.9.0"
-  },
   "dependencies": {
     "debug": "*",
     "eventemitter2": "0.4.x",
@@ -30,9 +27,13 @@
     "url": "http://github.com/DamonOehlman/sharedconfig/issues"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec",
+    "test": "mocha --reporter spec",
     "travis": "NODE_ENV=travis ./node_modules/.bin/mocha --reporter spec --timeout 30s"
   },
-  "contributors": [],
-  "optionalDependencies": {}
+  "homepage": "https://github.com/DamonOehlman/sharedconfig",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "license": "MIT"
 }
