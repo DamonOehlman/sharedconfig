@@ -27,7 +27,8 @@
     "url": "http://github.com/DamonOehlman/sharedconfig/issues"
   },
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "mocha --reporter spec",
+    "gendocs": "gendocs > README.md"
   },
   "homepage": "https://github.com/DamonOehlman/sharedconfig",
   "main": "index.js",

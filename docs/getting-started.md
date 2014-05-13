@@ -1,26 +1,3 @@
-# sharedconfig
-
-The `sharedconfig` module is used to provide applications a mechanism for
-sharing application configuration information across a network of machines.
-
-
-[![NPM](https://nodei.co/npm/sharedconfig.png)](https://nodei.co/npm/sharedconfig/)
-
-[![Build Status](https://img.shields.io/travis/DamonOehlman/sharedconfig.svg?branch=master)](https://travis-ci.org/DamonOehlman/sharedconfig)
-
-## Why?
-
-So why would you want to use `sharedconfig` over many of the other excellent
-node configuration libraries.  Primarily, because this configuration engine
-is designed to grab configuration information from a single configuration
-server. Additionally, the [CouchDB](http://couchdb.apache.org) `_changes`
-feed is used (via [nano](https://github.com/dscape/nano) and
-[follow](https://github.com/iriscouch/follow)) to monitor changes in the config.
-
-Combine this with the magic of [xdiff](https://github.com/dominictarr/xdiff)
-and you have a really powerful little configuration service for your
-application.  Here, let me show you:
-
 ## Getting Started
 
 To get started with `sharedconfig` you simply need to create a new sharedconfig instance:
@@ -115,29 +92,3 @@ config.on('update.redis.*', function() {
     console.log('Redis config has changed: ', config.redis);
 });
 ```
-
-
-## License(s)
-
-### MIT
-
-Copyright (c) 2014 Damon Oehlman <damon.oehlman@gmail.com>
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

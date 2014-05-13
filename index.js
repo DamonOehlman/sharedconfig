@@ -7,10 +7,33 @@ var debug = require('debug')('sharedconfig'),
     privateMembers = ['_', 'filter'];
 
 /**
-## triggerUpdates
-This is a helper function that will trigger updates for each of the leaf nodes within value.  If value is
-already a leaf node, then the update event will be triggered, otherwise the child elements of value
-will be traversed and updates triggered appropriately.
+  # sharedconfig
+
+  The `sharedconfig` module is used to provide applications a mechanism for
+  sharing application configuration information across a network of machines.
+
+  ## Why?
+
+  So why would you want to use `sharedconfig` over many of the other excellent
+  node configuration libraries.  Primarily, because this configuration engine
+  is designed to grab configuration information from a single configuration
+  server. Additionally, the [CouchDB](http://couchdb.apache.org) `_changes`
+  feed is used (via [nano](https://github.com/dscape/nano) and
+  [follow](https://github.com/iriscouch/follow)) to monitor changes in the config.
+
+  Combine this with the magic of [xdiff](https://github.com/dominictarr/xdiff)
+  and you have a really powerful little configuration service for your
+  application.  Here, let me show you:
+
+  <<< docs/getting-started.md
+
+**/
+
+/*
+  ## triggerUpdates
+  This is a helper function that will trigger updates for each of the leaf nodes within value.  If value is
+  already a leaf node, then the update event will be triggered, otherwise the child elements of value
+  will be traversed and updates triggered appropriately.
 */
 function triggerUpdates(config, ns, value) {
   // if the value is an object ({}) then traverse down through children
@@ -115,7 +138,7 @@ SharedConfig.prototype.applyConfig = function(data) {
   return this._data = newConfig;
 };
 
-/**
+/*
 ## filter
 
 The filter function is used to apply changes to the configuration values
