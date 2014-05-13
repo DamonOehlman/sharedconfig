@@ -7,7 +7,7 @@
     "couchdb",
     "sync"
   ],
-  "version": "0.1.6",
+  "version": "0.1.7",
   "dependencies": {
     "debug": "*",
     "eventemitter2": "0.4.x",
