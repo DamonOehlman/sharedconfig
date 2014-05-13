@@ -27,8 +27,7 @@
     "url": "http://github.com/DamonOehlman/sharedconfig/issues"
   },
   "scripts": {
-    "test": "mocha --reporter spec",
-    "travis": "NODE_ENV=travis ./node_modules/.bin/mocha --reporter spec --timeout 30s"
+    "test": "mocha --reporter spec"
   },
   "homepage": "https://github.com/DamonOehlman/sharedconfig",
   "main": "index.js",
