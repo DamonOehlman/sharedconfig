@@ -11,13 +11,13 @@
   "dependencies": {
     "debug": "*",
     "eventemitter2": "0.4.x",
-    "nano": "3.4.x",
+    "nano": "^5",
     "xdiff": "0.2.x",
-    "lodash": "0.7.x"
+    "underscore": "^1"
   },
   "devDependencies": {
-    "async": "0.2.x",
-    "mocha": "1.9.x"
+    "async": "~0.8",
+    "mocha": "^1"
   },
   "repository": {
     "type": "git",
