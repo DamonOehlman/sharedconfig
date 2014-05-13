@@ -1,7 +1,5 @@
-// Select iris couch as the couch test server if this test is running on travis
-var couchHost = (process.env.NODE_ENV === 'travis')? 'http://damonoehlman.iriscouch.com' : 'http://127.0.0.1:5984';
-
 var debug = require('debug')('sharedconfig-tests'),
+    couchHost = 'http://127.0.0.1:5984',
     nano = require('nano')(couchHost),
     db = nano.use('sharedconfig-test'),
     async = require('async'),
