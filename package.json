@@ -11,7 +11,7 @@
   "dependencies": {
     "debug": "*",
     "eventemitter2": "0.4.x",
-    "lodash": "^2",
+    "lodash": "^4.17.17",
     "nano": "^5",
     "xdiff": "0.2.x"
   },
